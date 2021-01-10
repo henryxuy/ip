@@ -17,6 +17,7 @@ public class Duke {
         printGreeting();
         addListAndExit();
 
+
     }
 
     private static void addListAndExit(){
@@ -33,42 +34,84 @@ public class Duke {
                 break;
             }
             else if(tempDialogue.startsWith("done")){
-                String[] splitString = tempDialogue.split("done ");
-                int taskIndex;
-
-                try {
-                    taskIndex = Integer.parseInt(splitString[1]) - 1;
-                }
-                catch (NumberFormatException ex){
-                    // if the string cannot be parsed successfully
-                    System.out.println("Invalid done string.");
-                    continue;
-                }
-
-                if(taskIndex < 0 || taskIndex >= arrayCount){
-                    System.out.println("Wrong done index.");
-                    continue;
-                }
-
-                taskList[taskIndex].isDone = true;
-                echoChat("Nice! I've marked this task as done: \n" +
-                        "[" + taskList[taskIndex].getStatusIcon() + "]" + taskList[taskIndex].description);
+                doneTask(tempDialogue);
             }
             else {
-                /* add to list and show (happy path) */
-                taskList[arrayCount++] = new Task(tempDialogue);
-                echoChat("added: " + tempDialogue);
+                /* add to list and show */
+                addTask(tempDialogue);
             }
         }
 
         return;
     }
 
+    private static void doneTask(String tempDialogue) {
+        String[] splitString = tempDialogue.split("done ");
+        int taskIndex;
+
+        try {
+            taskIndex = Integer.parseInt(splitString[1]) - 1;
+        }
+        catch (NumberFormatException ex){
+            // if the string cannot be parsed successfully
+            System.out.println("Invalid done string.");
+            return;
+        }
+
+        if(taskIndex < 0 || taskIndex >= arrayCount){
+            System.out.println("Wrong done index.");
+            return;
+        }
+
+        taskList[taskIndex].isDone = true;
+        echoChat("Nice! I've marked this task as done: \n" +
+                "[" + taskList[taskIndex].getStatusIcon() + "]" + taskList[taskIndex].description);
+    }
+
+
+    private static void addTask(String taskString){
+        // parse the task
+        try {
+            String[] timeSplitString = taskString.split(" /");
+            int spaceIndex = timeSplitString[0].indexOf(" ");
+            String taskType = timeSplitString[0].substring(0, spaceIndex);
+            String taskDescription = timeSplitString[0].substring(spaceIndex + 1);
+            String time = "";
+
+            // add the task
+            switch (taskType) {
+                case "todo":
+                    taskList[arrayCount++] = new Todo(taskDescription);
+                    break;
+                case "deadline":
+                    time = timeSplitString[1];
+                    taskList[arrayCount++] = new Deadline(taskDescription, time);
+                    break;
+                case "event":
+                    time = timeSplitString[1];
+                    taskList[arrayCount++] = new Event(taskDescription, time);
+                    break;
+                default:
+                    throw new Exception("Invalid task type");
+            }
+            echoChat("Got it. I've added this task:\n" + taskList[arrayCount-1] +
+                    "\nNow you have " + arrayCount + " tasks in the list.");
+        }
+
+        catch (Exception ex){
+            System.out.println("Invalid task input");
+        }
+    }
+
+
+
+
     private static void printList(){
         System.out.println("____________________________________________________________");
+        System.out.println("Here are the tasks in your list:");
         for(int i = 0; i < arrayCount; i++) {
             Task tempTask = taskList[i];
-            System.out.println((i + 1) + ". [" + tempTask.getStatusIcon() + "] " + tempTask.description);
+            System.out.println((i + 1) + ". " + tempTask);
 //            System.out.println("\u2713");
 //            System.out.println((i + 1) + " [" + "\u2713" +"] " + tempTask.description);
         }
