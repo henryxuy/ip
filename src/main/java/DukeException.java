@@ -39,6 +39,10 @@ public class DukeException extends Exception{
             case WRONG_DELETE_INDEX:
                 this.description = "OOPS!!! The delete index is wrong.";
                 break;
+            case WRONG_TIME_DEADLINE:
+                this.description = "OOPS!!! The time format of deadline is wrong.";
+            case WRONG_TIME_EVENT:
+                this.description = "OOPS!!! The time format of event is wrong.";
             default:
                 break;
         }
@@ -53,6 +57,7 @@ public class DukeException extends Exception{
 
 enum DukeExceptionType{
     MEANINGLESS_INPUT, EMPTY_TODO, EMPTY_DEADLINE, EMPTY_EVENT,
-    NO_TIME_DEADLINE, NO_TIME_EVENT, WRONG_DONE_INDEX, WRONG_DELETE_INDEX
+    NO_TIME_DEADLINE, NO_TIME_EVENT, WRONG_DONE_INDEX, WRONG_DELETE_INDEX,
+    WRONG_TIME_DEADLINE, WRONG_TIME_EVENT
 }
 
